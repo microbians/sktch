@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>The Electronic Sketchbook by microbians - Variable bezier offseting test</title>
+
+	<link rel="stylesheet" href="quill_v4.css">
+
+	<script config="config.js" src="../../../sktch/include.js"></script>
+	<script>
+		include("quill_v4", ["sktch"]);
+	</script>
+</head>
+<body>
+	<div id="debug"></div>
+	<div id="fps"></div>
+	<div class="littletext">Demonstration of the variable bezier strokes by offseting a quad bezier path.<br/>
+	Math papers at <a href="https://microbians.com/math">https://microbians.com/math</a></div>
+	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<defs>
+			<filter id="waves" color-interpolation-filters="linearRGB">
+				<feTurbulence type="turbulence" baseFrequency="0.01 0.01" numOctaves="1" seed="1" stitchTiles="stitch" result="turbulence"/>
+				<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="G" yChannelSelector="A" result="displacementMap"/>
+		  	</filter>
+			<filter id="pen" color-interpolation-filters="linearRGB">
+				<feTurbulence type="turbulence" baseFrequency="1.01 5.01" numOctaves="1" seed="1" stitchTiles="stitch" result="turbulence"/>
+				<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="10" xChannelSelector="G" yChannelSelector="R" result="displacementMap"/>
+		  	</filter>
+			<filter id="filterdance" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
+				<feMorphology operator="dilate" radius="1 1" in="SourceAlpha" result="morphology"/>
+				<feComposite in="morphology" in2="SourceAlpha" operator="out" result="composite1"/>
+				<feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" seed="0" stitchTiles="noStitch" result="turbulence"/>
+				<feDisplacementMap in="composite1" in2="turbulence" scale="17" xChannelSelector="A" yChannelSelector="A" result="displacementMap"/>
+				<feMerge result="merge">
+			    		<feMergeNode in="SourceGraphic" result="mergeNode"/>
+					<feMergeNode in="displacementMap" result="mergeNode1"/>
+			  	</feMerge>
+			</filter>
+			<filter id="filtercontour" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
+	<feTurbulence type="turbulence" baseFrequency="0.015 0.015" numOctaves="3" seed="8" stitchTiles="stitch" result="turbulence"/>
+	<feMorphology operator="dilate" radius="35 35" in="turbulence" result="morphology"/>
+	<feColorMatrix type="matrix" values="1 0 0 0 0
+0 1 0 0 0
+0 0 1 0 0
+0 0 0 10 0" in="morphology" result="colormatrix"/>
+	<feColorMatrix type="saturate" values="10" in="colormatrix" result="colormatrix1"/>
+	<feComposite in="colormatrix1" in2="SourceAlpha" operator="in" result="composite"/>
+</filter>
+
+<filter id="filtersplash" width="150%" height="160%" x="-25%" y="-25%">
+<!-- COLORS -->
+  <feFlood flood-color="#16B5FF" result="COLOR-blue" />‚
+  <feFlood flood-color="#9800FF" result="COLOR-violet" />
+  <feFlood flood-color="#A64DFF" result="COLOR-violet-light" />
+<!-- COLORS END -->
+
+<!-- BOTTOM SPLASH -->
+  <feTurbulence baseFrequency="0.05" type="fractalNoise" numOctaves="1" seed="2" result="BOTTOM-SPLASH_10" />
+  <feGaussianBlur stdDeviation="6.5"  in="SourceAlpha" result="BOTTOM-SPLASH_20" />
+  <feDisplacementMap scale="420" in="BOTTOM-SPLASH_20" in2="BOTTOM-SPLASH_10" result="BOTTOM-SPLASH_30"/>
+  <feComposite operator="in" in="COLOR-blue" in2="BOTTOM-SPLASH_30" result="BOTTOM-SPLASH_40" />
+<!-- BOTTOM END -->
+
+<!-- MIDDLE SPLASH -->
+  <feTurbulence baseFrequency="0.1" type="fractalNoise" numOctaves="1" seed="1" result="MIDDLE-SPLASH_10" />
+  <feGaussianBlur in="SourceAlpha" stdDeviation="0.1" result="MIDDLE-SPLASH_20" />
+  <feDisplacementMap in="MIDDLE-SPLASH_20" in2="MIDDLE-SPLASH_10" scale="25" result="MIDDLE-SPLASH_30"/>
+  <feComposite in="COLOR-violet-light" in2="MIDDLE-SPLASH_30" operator="in" result="MIDDLE-SPLASH_40" />
+<!-- MIDDLE END -->
+
+<!-- TOP SPLASH -->
+  <feTurbulence baseFrequency="0.07" type="fractalNoise" numOctaves="1" seed="1" result="TOP-SPLASH_10" />
+  <feGaussianBlur stdDeviation="3.5" in="SourceAlpha" result="TOP-SPLASH_20" />
+  <feDisplacementMap scale="220" in="TOP-SPLASH_20" in2="TOP-SPLASH_10" result="TOP-SPLASH_30"/>
+  <feComposite operator="in" in="COLOR-violet" in2="TOP-SPLASH_30" result="TOP-SPLASH_40" />
+<!-- TOP END -->
+
+<!-- LIGHT EFFECTS -->
+  <feMerge  result="LIGHT-EFFECTS_10">
+	<feMergeNode in="BOTTOM-SPLASH_40" />
+	<feMergeNode in="MIDDLE-SPLASH_40" />
+	<feMergeNode in="TOP-SPLASH_40" />
+  </feMerge>
+  <feColorMatrix type="matrix"
+  values="0 0 0 0 0,
+  0 0 0 0 0,
+  0 0 0 0 0,
+  0 0 0 1 0" in="LIGHT-EFFECTS_10" result="LIGHT-EFFECTS_20" />
+  <feGaussianBlur stdDeviation="2" in="LIGHT-EFFECTS_20" result="LIGHT-EFFECTS_30" />
+  <feSpecularLighting surfaceScale="5" specularConstant=".75" specularExponent="30" lighting-color="#white" in="LIGHT-EFFECTS_30" result="LIGHT-EFFECTS_40">
+	<fePointLight x="-50" y="-100" z="400" />
+  </feSpecularLighting>
+  <feComposite operator="in" in="LIGHT-EFFECTS_40" in2="LIGHT-EFFECTS_20" result="LIGHT-EFFECTS_50"/>
+  <feComposite operator="arithmetic" k1="0" k2="1" k3="1" k4="0" in="LIGHT-EFFECTS_10" in2="LIGHT-EFFECTS_50" result="LIGHT-EFFECTS_60"/>
+</filter>
+<!-- LIGHT EFFECTS END -->
+
+
+		  </defs>
+	</svg>
+</body>
+</html>
