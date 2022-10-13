@@ -8,6 +8,7 @@ system to detect collisions and avoid rendering the whole canvas, only rendering
 portions that change.
 
 ––––––––––––––––––––––––––––––––––––––––
+
 MIT License
 
 Copyright (c) 2021 Gabriel Suchowolski
